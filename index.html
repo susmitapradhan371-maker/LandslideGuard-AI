@@ -3,115 +3,758 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LandslideGuard AI</title>
+
+    <title>LandslideGuard AI | NER</title>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f7f6;
             margin: 0;
-            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f8f6;
+            color: #18332b;
         }
 
-        .container {
-            max-width: 700px;
-            margin: 40px auto;
+        /* HEADER */
+        header {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 18px 5%;
+            border-bottom: 1px solid #e1ebe7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        h1 {
-            text-align: center;
-            color: #1b5e20;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        p {
-            text-align: center;
-            color: #555;
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #087f5b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 23px;
+        }
+
+        .brand h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .brand small {
+            color: #71847d;
+        }
+
+        .online {
+            color: #087f5b;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* HERO */
+        .hero {
+            max-width: 1200px;
+            margin: 35px auto 20px;
+            padding: 0 20px;
+        }
+
+        .tag {
+            color: #087f5b;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin: 12px 0;
+            color: #102c24;
+        }
+
+        .hero p {
+            color: #687a73;
+            font-size: 17px;
+            max-width: 850px;
+        }
+
+        /* MAIN GRID */
+        .dashboard {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(24, 51, 43, 0.08);
+            border: 1px solid #e4eee9;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .sub {
+            color: #71847d;
+            margin-bottom: 20px;
+        }
+
+        /* FORM */
+        .location-box {
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
-            margin-top: 15px;
+            font-size: 14px;
             font-weight: bold;
+            margin-bottom: 7px;
+            color: #405850;
         }
 
+        select,
         input {
             width: 100%;
-            padding: 12px;
-            margin-top: 6px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            padding: 13px 14px;
+            border: 1px solid #d7e3de;
+            border-radius: 9px;
+            background: #fbfdfc;
+            font-size: 15px;
+            outline: none;
         }
 
-        button {
+        select:focus,
+        input:focus {
+            border-color: #087f5b;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field {
+            margin-bottom: 5px;
+        }
+
+        .analyse {
             width: 100%;
-            padding: 13px;
-            margin-top: 25px;
-            background: #2e7d32;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 17px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #1b5e20;
-        }
-
-        .result {
-            margin-top: 25px;
+            margin-top: 20px;
             padding: 15px;
-            background: #e8f5e9;
-            border-radius: 8px;
-            text-align: center;
+            border: none;
+            border-radius: 10px;
+            background: #087f5b;
+            color: white;
+            font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .analyse:hover {
+            background: #056546;
+            transform: translateY(-1px);
+        }
+
+        /* RESULT */
+        .assessment {
+            text-align: center;
+        }
+
+        .assessment h2 {
+            margin-bottom: 15px;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            margin: 10px auto 18px;
+            border-radius: 50%;
+            border: 10px solid #d94b32;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #172d26;
+        }
+
+        .outof {
+            font-size: 13px;
+            color: #788a83;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 18px;
+            border-radius: 20px;
+            background: #ffe5df;
+            color: #c53d27;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .probability {
+            margin: 15px 0;
+            color: #586b63;
+        }
+
+        .warning {
+            background: #fff8e7;
+            border: 1px solid #f0d99a;
+            padding: 13px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 14px;
+            color: #6c5722;
+            margin-bottom: 20px;
+        }
+
+        /* BARS */
+        .factor {
+            text-align: left;
+            margin: 14px 0;
+        }
+
+        .factor-name {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: #53665e;
+        }
+
+        .bar {
+            width: 100%;
+            height: 9px;
+            background: #e8efec;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            background: #087f5b;
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        /* MAP */
+        .map-card {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .map-inner {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(24, 51, 43, 0.08);
+            border: 1px solid #e4eee9;
+        }
+
+        .map-inner h2 {
+            margin-top: 0;
+        }
+
+        .map-inner p {
+            color: #71847d;
+        }
+
+        .map {
+            width: 100%;
+            height: 390px;
+            border: none;
+            border-radius: 14px;
+            margin-top: 15px;
+        }
+
+        /* INFO CARDS */
+        .info-grid {
+            max-width: 1200px;
+            margin: 25px auto 45px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .info {
+            background: white;
+            padding: 22px;
+            border-radius: 15px;
+            border: 1px solid #e4eee9;
+        }
+
+        .info h3 {
+            margin-top: 0;
+        }
+
+        .info p {
+            color: #71847d;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #102c24;
+            color: #dce9e4;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 850px) {
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 31px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 14px 20px;
+            }
+
+            .online {
+                display: none;
+            }
+
+            .score-circle {
+                width: 150px;
+                height: 150px;
+            }
+
+            .score {
+                font-size: 40px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="container">
-
-    <h1>🌍 LandslideGuard AI</h1>
-
-    <p>Landslide Risk Prediction System</p>
-
-    <form method="POST">
-
-        <label>Rainfall (mm/day)</label>
-        <input type="number" step="any" name="rainfall" required>
-
-        <label>Soil Moisture (%)</label>
-        <input type="number" step="any" name="soil_moisture" required>
-
-        <label>Slope (degrees)</label>
-        <input type="number" step="any" name="slope" required>
-
-        <label>Elevation (metres)</label>
-        <input type="number" step="any" name="elevation" required>
-
-        <label>Temperature (°C)</label>
-        <input type="number" step="any" name="temperature" required>
-
-        <label>Past Landslide Events</label>
-        <input type="number" name="past_events" required>
-
-        <button type="submit">🔍 Predict Landslide Risk</button>
-
-    </form>
-
-    {% if prediction %}
-    <div class="result">
-        Prediction: {{ prediction }}
+<header>
+    <div class="brand">
+        <div class="logo">🌍</div>
+        <div>
+            <h2>LandslideGuard AI</h2>
+            <small>Early Warning & Risk Monitoring • North Eastern Region</small>
+        </div>
     </div>
-    {% endif %}
 
-</div>
+    <div class="online">● SYSTEM ONLINE</div>
+</header>
+
+
+<section class="hero">
+    <div class="tag">AI-BASED DISASTER MANAGEMENT</div>
+
+    <h1>Predict landslide risk before it becomes a disaster.</h1>
+
+    <p>
+        Analyse rainfall, soil moisture, slope, elevation and historical
+        events to generate an explainable landslide risk score.
+    </p>
+</section>
+
+
+<main class="dashboard">
+
+    <!-- LEFT -->
+    <section class="card">
+
+        <h2>Risk Prediction</h2>
+
+        <p class="sub">
+            Enter current/observed conditions.
+        </p>
+
+        <form method="POST" id="riskForm">
+
+            <div class="location-box">
+                <label>Location</label>
+
+                <select name="location">
+                    <option>Guwahati — Assam</option>
+                    <option>Gangtok — Sikkim</option>
+                    <option>Shillong — Meghalaya</option>
+                    <option>Itanagar — Arunachal Pradesh</option>
+                    <option>Kohima — Nagaland</option>
+                    <option>Imphal — Manipur</option>
+                    <option>Aizawl — Mizoram</option>
+                    <option>Agartala — Tripura</option>
+                </select>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label>Rainfall (mm/day)</label>
+                    <input
+                        type="number"
+                        step="any"
+                        name="rainfall"
+                        id="rainfall"
+                        value="120"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label>Soil Moisture (%)</label>
+                    <input
+                        type="number"
+                        step="any"
+                        name="soil_moisture"
+                        id="soil_moisture"
+                        value="65"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label>Slope (degrees)</label>
+                    <input
+                        type="number"
+                        step="any"
+                        name="slope"
+                        id="slope"
+                        value="28"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label>Elevation (m)</label>
+                    <input
+                        type="number"
+                        step="any"
+                        name="elevation"
+                        id="elevation"
+                        value="1500"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label>Temperature (°C)</label>
+                    <input
+                        type="number"
+                        step="any"
+                        name="temperature"
+                        id="temperature"
+                        value="22"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label>Nearby past events</label>
+                    <input
+                        type="number"
+                        name="past_events"
+                        id="past_events"
+                        value="2"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <button type="submit" class="analyse">
+                🔍 &nbsp; ANALYSE LANDSLIDE RISK
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- RIGHT -->
+    <section class="card assessment">
+
+        <h2>AI Risk Assessment</h2>
+
+        <div class="score-circle">
+            <div class="score" id="score">--</div>
+            <div class="outof">/100</div>
+        </div>
+
+        <div class="status" id="status">
+            READY
+        </div>
+
+        <div class="probability">
+            AI estimated probability:
+            <strong id="probability">--%</strong>
+        </div>
+
+        <div class="warning" id="warning">
+            ⚠️ Enter the current conditions and analyse the landslide risk.
+        </div>
+
+        <div class="factor">
+            <div class="factor-name">
+                <span>Rainfall</span>
+                <span id="rainValue">--</span>
+            </div>
+            <div class="bar">
+                <div class="fill" id="rainBar"></div>
+            </div>
+        </div>
+
+        <div class="factor">
+            <div class="factor-name">
+                <span>Soil Moisture</span>
+                <span id="soilValue">--</span>
+            </div>
+            <div class="bar">
+                <div class="fill" id="soilBar"></div>
+            </div>
+        </div>
+
+        <div class="factor">
+            <div class="factor-name">
+                <span>Slope</span>
+                <span id="slopeValue">--</span>
+            </div>
+            <div class="bar">
+                <div class="fill" id="slopeBar"></div>
+            </div>
+        </div>
+
+        <div class="factor">
+            <div class="factor-name">
+                <span>History</span>
+                <span id="historyValue">--</span>
+            </div>
+            <div class="bar">
+                <div class="fill" id="historyBar"></div>
+            </div>
+        </div>
+
+        {% if prediction %}
+        <div style="
+            margin-top:20px;
+            padding:12px;
+            border-radius:10px;
+            background:#eef8f4;
+            color:#087f5b;
+            font-weight:bold;
+        ">
+            AI Prediction: {{ prediction }}
+        </div>
+        {% endif %}
+
+    </section>
+
+</main>
+
+
+<!-- MAP -->
+<section class="map-card">
+
+    <div class="map-inner">
+
+        <h2>NER Risk Monitoring Map</h2>
+
+        <p>
+            Prototype map of major North Eastern Region locations.
+        </p>
+
+        <iframe
+            class="map"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=88.0%2C21.0%2C97.5%2C29.8&layer=mapnik"
+            loading="lazy">
+        </iframe>
+
+    </div>
+
+</section>
+
+
+<!-- INFO -->
+<section class="info-grid">
+
+    <div class="info">
+        <h3>🌧️ Rainfall Monitoring</h3>
+        <p>
+            Heavy rainfall can rapidly increase soil saturation and
+            landslide probability.
+        </p>
+    </div>
+
+    <div class="info">
+        <h3>⛰️ Terrain Analysis</h3>
+        <p>
+            Slope and elevation are considered to identify vulnerable
+            mountainous areas.
+        </p>
+    </div>
+
+    <div class="info">
+        <h3>🤖 AI Risk Analysis</h3>
+        <p>
+            Multiple environmental factors are combined to generate
+            an explainable risk assessment.
+        </p>
+    </div>
+
+</section>
+
+
+<footer>
+    LandslideGuard AI • Early Warning & Disaster Management Prototype
+</footer>
+
+
+<script>
+
+    const form = document.getElementById("riskForm");
+
+    form.addEventListener("submit", function() {
+
+        const rainfall =
+            Number(document.getElementById("rainfall").value);
+
+        const soil =
+            Number(document.getElementById("soil_moisture").value);
+
+        const slope =
+            Number(document.getElementById("slope").value);
+
+        const history =
+            Number(document.getElementById("past_events").value);
+
+
+        /* NORMALISE VALUES */
+
+        const rainRisk =
+            Math.min((rainfall / 250) * 100, 100);
+
+        const soilRisk =
+            Math.min(soil, 100);
+
+        const slopeRisk =
+            Math.min((slope / 45) * 100, 100);
+
+        const historyRisk =
+            Math.min((history / 5) * 100, 100);
+
+
+        /* RISK SCORE */
+
+        const score = Math.round(
+            (rainRisk * 0.35) +
+            (soilRisk * 0.25) +
+            (slopeRisk * 0.25) +
+            (historyRisk * 0.15)
+        );
+
+
+        const probability =
+            Math.min(Math.max(score + 1, 1), 99);
+
+
+        document.getElementById("score").innerText = score;
+
+        document.getElementById("probability").innerText =
+            probability + "%";
+
+
+        document.getElementById("rainBar").style.width =
+            rainRisk + "%";
+
+        document.getElementById("soilBar").style.width =
+            soilRisk + "%";
+
+        document.getElementById("slopeBar").style.width =
+            slopeRisk + "%";
+
+        document.getElementById("historyBar").style.width =
+            historyRisk + "%";
+
+
+        document.getElementById("rainValue").innerText =
+            Math.round(rainRisk) + "%";
+
+        document.getElementById("soilValue").innerText =
+            Math.round(soilRisk) + "%";
+
+        document.getElementById("slopeValue").innerText =
+            Math.round(slopeRisk) + "%";
+
+        document.getElementById("historyValue").innerText =
+            Math.round(historyRisk) + "%";
+
+
+        let status = "LOW";
+        let message =
+            "Conditions currently indicate relatively low landslide risk.";
+
+        if (score >= 75) {
+            status = "CRITICAL";
+            message =
+                "⚠️ EARLY WARNING: Immediate caution required. Follow official evacuation instructions.";
+        }
+        else if (score >= 50) {
+            status = "HIGH";
+            message =
+                "⚠️ High-risk conditions detected. Closely monitor the area.";
+        }
+        else if (score >= 30) {
+            status = "MODERATE";
+            message =
+                "⚠️ Moderate risk detected. Continue monitoring environmental conditions.";
+        }
+
+
+        document.getElementById("status").innerText = status;
+
+        document.getElementById("warning").innerText =
+            message;
+
+    });
+
+</script>
 
 </body>
 </html>
